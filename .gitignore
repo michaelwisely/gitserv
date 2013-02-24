@@ -1,0 +1,15 @@
+# Junk files
+*~
+*.pyc
+*.log
+
+# Buildout
+bootstrap.py
+bin/
+var/
+.installed.cfg
+src/*.egg-info
+
+# Don't commit test ssh keys
+ssh_key
+ssh_key.pub

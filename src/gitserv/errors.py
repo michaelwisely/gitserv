@@ -1,0 +1,2 @@
+class GitServException(Exception):
+    pass
