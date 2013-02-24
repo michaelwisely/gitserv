@@ -23,20 +23,24 @@ PARSER.add_argument('private_key', type=str, nargs=1,
                     help="The path to the server's private key.")
 PARSER.add_argument('public_key', type=str, nargs=1,
                     help="The path to the server's public key.")
-PARSER.add_argument('webserver_hostname', type=str, nargs=1,
-                    help="The hostname of the webserver")
+PARSER.add_argument('webserver_address', type=str, nargs=1,
+                    help="The address of the webserver.")
 PARSER.add_argument('--port', dest='port', action='store', default=2222,
                     help='Specifies a port to listen on')
 
 def run():
     args = PARSER.parse_args()
+
+    # Unpack values. Each should be a list of one item (hence the
+    # comma. Yay list unpacking)
     private_key, = args.private_key
     public_key, = args.public_key
+    webserver_address, = args.webserver_address
 
     components.registerAdapter(GitSession, GitConchUser, ISession)
 
     # Set up authorization
-    GitServer.meta = GitMeta()
+    GitServer.meta = GitMeta(webserver_address)
     GitServer.portal = Portal(GitRealm(GitServer.meta))
     GitServer.portal.registerChecker(TeamPasswordChecker(GitServer.meta))
 
