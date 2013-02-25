@@ -36,6 +36,7 @@ def run():
     private_key, = args.private_key
     public_key, = args.public_key
     webserver_address, = args.webserver_address
+    port = int(args.port)
 
     components.registerAdapter(GitSession, GitConchUser, ISession)
 
@@ -49,7 +50,7 @@ def run():
                        os.path.abspath(public_key))
 
     # Start listening
-    reactor.listenTCP(args.port, server)
+    reactor.listenTCP(port, server)
     reactor.run()
 
 
