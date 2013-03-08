@@ -14,9 +14,6 @@ import os
 import sys
 import argparse
 
-log.startLogging(sys.stderr)
-log.startLogging(open('gitssh.log', 'w'))
-
 
 PARSER = argparse.ArgumentParser(description='Run a git ssh server.')
 PARSER.add_argument('private_key', type=str, nargs=1,
@@ -37,6 +34,9 @@ def run():
     public_key, = args.public_key
     webserver_address, = args.webserver_address
     port = int(args.port)
+
+    log.startLogging(sys.stderr)
+    log.startLogging(open('gitssh.log', 'w'))
 
     components.registerAdapter(GitSession, GitConchUser, ISession)
 
