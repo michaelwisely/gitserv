@@ -1,0 +1,34 @@
+Index: twisted/conch/ssh/session.py
+===================================================================
+--- twisted/conch/ssh/session.py	(revision 32058)
++++ twisted/conch/ssh/session.py	(working copy)
+@@ -196,7 +196,8 @@
+ 
+     def __init__(self, session):
+         self.session = session
+-        self.lostOutOrErrFlag = False
++        self.lostOutFlag = False
++        self.lostErrFlag = False
+ 
+     def connectionMade(self):
+         if self.session.buf:
+@@ -213,16 +214,15 @@
+         """
+         EOF should only be sent when both STDOUT and STDERR have been closed.
+         """
+-        if self.lostOutOrErrFlag:
++        if self.lostOutFlag and self.lostErrFlag:
+             self.session.conn.sendEOF(self.session)
+-        else:
+-            self.lostOutOrErrFlag = True
++        self.lostOutFlag = True
+ 
+     def errConnectionLost(self):
+         """
+         See outConnectionLost().
+         """
+-        self.outConnectionLost()
++        self.lostErrFlag = True
+ 
+     def connectionLost(self, reason = None):
+         self.session.loseConnection()
