@@ -53,9 +53,8 @@ class GitMeta(object):
         try:
             teamid = self.TEAMID_RE.match(team_login).group('teamid')
             url = urljoin(self.path_url, teamid)
-            print url
             resp = requests.get(url, auth=self.webserver_auth)
-            full_path = resp.json()['repository']['path']
+            full_path = resp.json()['path']
             pretty_path = self.REPONAME_RE.sub(r'\g<repo_name>.git', full_path)
 
             # Make sure tat the full path ends with the path that the
