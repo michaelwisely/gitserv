@@ -28,16 +28,19 @@ class GitMeta(object):
     TEAMID_RE = re.compile(r'^.*-(?P<teamid>\d+)$')
     REPONAME_RE = re.compile(r'^(?P<repo_name>.*)__\d+\.git$')
 
-    def __init__(self, webserver_address):
+    def __init__(self, webserver_address, user, password):
         self.webserver_address = webserver_address
+        self.webserver_user = user
+        self.webserver_password = password
+        self.webserver_auth = (user, password)
         self.auth_url = urljoin(self.webserver_address, "api/repo/auth/")
         self.path_url = urljoin(self.webserver_address, "api/repo/path/")
 
     def checkPassword(self, team_login, password):
         try:
             teamid = self.TEAMID_RE.match(team_login).group('teamid')
-            resp = requests.get(self.auth_url, params={'teamid': teamid,
-                                                       "password": password})
+            resp = requests.get(self.auth_url, auth=self.webserver_auth,
+                                params={'teamid': teamid, "password": password})
             # If the password matches, we get a 200 back. Otherwise,
             # we get a 4XX
             return resp.status_code == 200
@@ -49,8 +52,9 @@ class GitMeta(object):
     def repopath(self, team_login, reponame):
         try:
             teamid = self.TEAMID_RE.match(team_login).group('teamid')
-            resp = requests.get(self.path_url, params={'teamid': teamid})
-            full_path = resp.json()['repository']['path']
+            url = urljoin(self.path_url, teamid)
+            resp = requests.get(url, auth=self.webserver_auth)
+            full_path = resp.json()['path']
             pretty_path = self.REPONAME_RE.sub(r'\g<repo_name>.git', full_path)
 
             # Make sure tat the full path ends with the path that the
