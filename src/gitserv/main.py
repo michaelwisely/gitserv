@@ -22,6 +22,10 @@ PARSER.add_argument('public_key', type=str, nargs=1,
                     help="The path to the server's public key.")
 PARSER.add_argument('webserver_address', type=str, nargs=1,
                     help="The address of the webserver.")
+PARSER.add_argument('webserver_user', type=str, nargs=1,
+                    help="The address of the webserver.")
+PARSER.add_argument('webserver_password', type=str, nargs=1,
+                    help="The address of the webserver.")
 PARSER.add_argument('--port', dest='port', action='store', default=2222,
                     help='Specifies a port to listen on')
 
@@ -34,6 +38,8 @@ def run():
     private_key, = args.private_key
     public_key, = args.public_key
     webserver_address, = args.webserver_address
+    webserver_user, = args.webserver_user
+    webserver_password, = args.webserver_password
     port = int(args.port)
 
     log.startLogging(sys.stderr)
@@ -42,7 +48,8 @@ def run():
     components.registerAdapter(GitSession, GitConchUser, ISession)
 
     # Set up authorization
-    GitServer.meta = GitMeta(webserver_address)
+    GitServer.meta = GitMeta(webserver_address,
+                             webserver_user, webserver_password)
     GitServer.portal = Portal(GitRealm(GitServer.meta))
     GitServer.portal.registerChecker(TeamPasswordChecker(GitServer.meta))
 
